@@ -1,0 +1,37 @@
+# Lineup Builder Configuration
+# Used for both interactive and batch/cron operation.
+
+# Schedules Direct credentials (can also use SD_USERNAME / SD_PASSWORD env vars)
+# credentials:
+#   username: you@email.com
+#   password: yourpassword
+
+# Callsign suffixes to strip from stream_name_contains matching.
+# e.g. WISCDT → WISC, WBBMHD → WBBM
+strip_suffixes:
+  - DT
+  - HD
+  - SD
+  - LP
+  - CD
+  - CA
+  - D2
+  - D3
+
+# Locations to exclude from provider results (substring match, case-insensitive).
+# Filters out national/generic lineups so local providers are prioritized.
+exclude_locations:
+  - National
+
+# Output directory for generated YAML files
+output_dir: output
+
+# Lineups to process in batch mode (uv run python cli.py --batch)
+# Each entry needs a zipcode and optional filters.
+lineups:
+  # - zipcode: "53597"
+  #   country: USA              # optional, defaults to USA
+  #   transport: Satellite      # optional filter: Cable, Satellite, Antenna, IPTV
+  #   provider: DirecTV         # optional filter: substring match on provider name
+  #   location: Madison         # optional filter: substring match on location
+  #   output: directv-madison.yaml  # optional, defaults to <lineup_id>.yaml

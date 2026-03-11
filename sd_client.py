@@ -77,46 +77,28 @@ class SDClient:
         return providers
 
     def get_lineup(self, lineup_id: str) -> list[dict]:
-        """GET /lineups/{id} — full channel map + station metadata.
+        """GET /lineups/preview/{id} — channel map without adding lineup.
 
-        Returns list of merged channel dicts, each with:
-            channel, name, callsign, affiliate, logo_url, station_id
+        Returns list of channel dicts, each with:
+            channel, name, callsign, affiliate, station_id
         """
         self._ensure_auth()
         resp = self._http.get(
-            f"/lineups/{lineup_id}",
+            f"/lineups/preview/{lineup_id}",
             headers=self._headers(),
         )
         resp.raise_for_status()
-        data = resp.json()
-
-        # Index stations by stationID for O(1) lookup
-        stations = {}
-        for s in data.get("stations", []):
-            stations[s["stationID"]] = s
+        entries = resp.json()
 
         channels = []
-        for entry in data.get("map", []):
-            station_id = entry.get("stationID")
-            station = stations.get(station_id, {})
-
-            # Pick best logo: prefer "dark" category, largest width
-            logo_url = None
-            logos = station.get("stationLogo", []) or station.get("logo", []) or []
-            if logos:
-                dark_logos = [l for l in logos if l.get("category") == "dark"]
-                best = max(dark_logos or logos, key=lambda l: l.get("width", 0))
-                logo_url = best.get("URL")
-
-            channel_num = entry.get("channel", entry.get("logicalChannelNumber"))
-
+        for entry in entries:
             channels.append({
-                "channel": channel_num,
-                "name": station.get("name", ""),
-                "callsign": station.get("callsign", ""),
-                "affiliate": station.get("affiliate", ""),
-                "logo_url": logo_url,
-                "station_id": station_id,
+                "channel": entry.get("channel"),
+                "name": entry.get("name", ""),
+                "callsign": entry.get("callsign", ""),
+                "affiliate": entry.get("affiliate", ""),
+                "logo_url": None,
+                "station_id": entry.get("stationID"),
             })
 
         return channels
