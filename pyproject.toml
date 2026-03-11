@@ -1,0 +1,12 @@
+[project]
+name = "lineup-builder"
+version = "0.1.0"
+description = "Convert TV provider channel lineups from Schedules Direct into ECM auto-creation YAML rulesets"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx",
+    "pyyaml",
+]
+
+[project.scripts]
+lineup-builder = "cli:main"
